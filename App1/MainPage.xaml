@@ -1,0 +1,136 @@
+﻿<Page
+    x:Class="App1.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:App1"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Page.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Styles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Page.Resources>
+    <Grid Background="AliceBlue">
+
+        <StackPanel Background="Transparent" Width="600" Orientation="Vertical">
+            <StackPanel Orientation="Horizontal">
+
+                <TextBox 
+                x:Name="inputBox"
+                Width="300"
+                HorizontalAlignment="Center"
+                Text="TextBox" 
+                FontSize="20"
+                Foreground="#1da1f2"
+                Background="Transparent"
+                TextWrapping="Wrap"  
+                Margin="0,100,0,50"
+            />
+                <Button 
+                x:Name="ClickMe"
+                Click="onSubmitClick"
+                HorizontalAlignment="Center"
+                Padding="0"
+                Margin="0,50,0,0">
+
+                    <Border 
+                        CornerRadius="23" 
+                        Background="Transparent" 
+                        BorderBrush="#1da1f2" 
+                        BorderThickness="1.5"
+                        Height="40" 
+                        Padding="15,0,15,0"
+                        Margin="0">
+
+                        <TextBlock 
+                            Text="Check" 
+                            FontSize="16"
+                            FontFamily="Arial"
+                        
+                            VerticalAlignment="Center"
+                            Margin="0"
+                            Padding="0"
+                            Foreground="#1da1f2"/>
+                    </Border>
+                </Button>
+                <Button 
+                x:Name="insertDB"
+                Click="onInsertToDb"
+                HorizontalAlignment="Center"
+                Padding="0"
+                Margin="0,50,0,0">
+
+                    <Border 
+                        CornerRadius="23" 
+                        Background="Transparent" 
+                        BorderBrush="#1da1f2" 
+                        BorderThickness="1.5"
+                        Height="40" 
+                        Padding="15,0,15,0"
+                        Margin="0">
+
+                        <TextBlock 
+                            Text="Insert" 
+                            FontSize="16"
+                            FontFamily="Arial"
+                        
+                            VerticalAlignment="Center"
+                            Margin="0"
+                            Padding="0"
+                            Foreground="#1da1f2"/>
+                    </Border>
+                </Button>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <TextBlock 
+                    x:Name="infoMessageBox"
+                    HorizontalAlignment="Left" 
+                    Text="TextBlock" 
+                    FontSize="27"
+                    Foreground="#1da1f2"
+                    TextWrapping="Wrap" 
+                    VerticalAlignment="Center"
+                    Style="{StaticResource HeaderTextBlockStyle}"
+                
+                />
+
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal">
+
+                <Button Click="sortByName">
+                    <Image Source="Assets/sorting.jpg" Width="20" HorizontalAlignment="Left"/>
+                </Button>
+
+                <Button Click="sortByTime">
+                    <Image Source="Assets/timer.png" Width="20" HorizontalAlignment="Left"/>
+                </Button>
+                <Button Click="sortByAvailability">
+                    <Image Source="Assets/success.png" Width="20" HorizontalAlignment="Left"/>
+                </Button>
+                <Button Click="searchAll">
+                    <Image Source="Assets/searchall.png" Width="20" HorizontalAlignment="Left"/>
+                </Button>
+
+            </StackPanel>
+
+            <ListView x:Name="listView" Height="494" HorizontalContentAlignment="Stretch" >
+
+            </ListView>
+
+
+
+
+
+
+
+
+        </StackPanel>
+
+    </Grid>
+</Page>
