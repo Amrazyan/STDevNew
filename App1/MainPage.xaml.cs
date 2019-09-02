@@ -82,7 +82,16 @@ namespace App1
         }
         private void addListItems(string link)
         {
+
             Block block = new Block(link);
+
+            if (dataCollectionList.Contains(block))
+            {
+                infoMessageBox.Text = "Same value " + link;
+                return;
+            }
+            
+            Database.Instance.insertIntoDB(link);
 
             var data = block.initBlock();
 

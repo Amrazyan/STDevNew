@@ -101,5 +101,18 @@ namespace App1.Scripts
             return (grid, img);
         }
 
+
+        public override string ToString()
+        {
+            return _link.ToString();
+        }
+        public override bool Equals(object obj)
+        {
+            return this.ToString() == obj.ToString();
+        }
+        public override int GetHashCode()
+        {
+            return this.ToString().GetHashCode();
+        }
     }
 }
