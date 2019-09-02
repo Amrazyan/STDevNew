@@ -40,7 +40,7 @@ namespace App1
         private void onSubmitClick(object sender, RoutedEventArgs e)
         {
 
-            addListItems(inputBox.Text);
+            addItemsToList(inputBox.Text);
 
         }
 
@@ -68,6 +68,40 @@ namespace App1
         }
 
 
+        private void onInsertToDb(object sender, RoutedEventArgs e)
+        {
+            Database db = new Database();
+            db.createDB();
+        }
+
+
+        private async void CloseButton_Click(object sender, RoutedEventArgs e, Block myBlock)
+        {
+            infoMessageBox.Text = "In close button func : ";
+            if (myBlock.TimeTaken == TimeSpan.Zero)
+            {
+                ContentDialog popUp = new ContentDialog
+                {
+                    Title = "Wait",
+                    Content = "Please wait untill process was finished",
+                    PrimaryButtonText = "Ok"
+                };
+                infoMessageBox.Text = "Waiting";
+                await popUp.ShowAsync();
+            }
+            else
+            {
+                infoMessageBox.Text = "Time taken is not null : " + myBlock.TimeTaken.ToString();
+                dataCollectionList.Remove(myBlock);
+                listView.Items.Clear();
+                foreach (var item in dataCollectionList)
+                {
+                    listView.Items.Add(item.BlockGrid);
+                }
+            }
+
+        }
+
         private void checkAllAgain()
         {
             List<Block> localDataCollectionList = new List<Block>(dataCollectionList);
@@ -76,11 +110,11 @@ namespace App1
 
             foreach (var item in localDataCollectionList)
             {
-                addListItems(item.Link);
+                addItemsToList(item.Link);
             }
 
         }
-        private void addListItems(string link)
+        private void addItemsToList(string link)
         {
 
             Block block = new Block(link);
@@ -101,6 +135,8 @@ namespace App1
 
             System.Diagnostics.Stopwatch timer = new System.Diagnostics.Stopwatch();
 
+            block.CloseButton.Click += delegate (object sender, RoutedEventArgs e) { CloseButton_Click(sender, e, block); };
+
             timer.Start();
 
             MakeRequest.UrlIsValid(link, () =>
@@ -108,7 +144,7 @@ namespace App1
                 timer.Stop();
                 block.TimeTaken = timer.Elapsed;
                 block.IsAvailable = true;
-                block.CloseButton.Click += delegate (object sender, RoutedEventArgs e) { CloseButton_Click(sender, e, block); };
+             //   block.CloseButton.Click += delegate (object sender, RoutedEventArgs e) { CloseButton_Click(sender, e, block); };
                 ExpandingMethods.changeUiFromAnotherThread(() => infoMessageBox.Text = "Site is valid");
                 ExpandingMethods.changeUiFromAnotherThread(() => block.TimeTextBlock.Text = block.TimeTaken.TotalSeconds.ToString("0.000"));
                 ExpandingMethods.changeUiFromAnotherThread(() => block.BlockImage.Source = new BitmapImage(new Uri("ms-appx:///Assets/success.png")));
@@ -118,7 +154,7 @@ namespace App1
                 timer.Stop();
                 block.TimeTaken = timer.Elapsed;
                 block.IsAvailable = false;
-                block.CloseButton.Click += delegate (object sender, RoutedEventArgs e) { CloseButton_Click(sender, e, block); };
+               // block.CloseButton.Click += delegate (object sender, RoutedEventArgs e) { CloseButton_Click(sender, e, block); };
                 ExpandingMethods.changeUiFromAnotherThread(() => infoMessageBox.Text = "Site is NOT valid");
                 ExpandingMethods.changeUiFromAnotherThread(() => block.TimeTextBlock.Text = block.TimeTaken.TotalSeconds.ToString("0.000"));
                 ExpandingMethods.changeUiFromAnotherThread(() => block.BlockImage.Source = new BitmapImage(new Uri("ms-appx:///Assets/failed.png")));
@@ -126,17 +162,7 @@ namespace App1
             });
         }
 
-        private void CloseButton_Click(object sender, RoutedEventArgs e, Block myBlock)
-        {
-
-            dataCollectionList.Remove(myBlock);
-            listView.Items.Clear();
-            foreach (var item in dataCollectionList)
-            {
-                listView.Items.Add(item.BlockGrid);
-            }
-
-        }
+ 
 
         private void sortList(bool isAscending, SortinListAlgorithms.SortList sortListAlgorithm)
         {
@@ -154,12 +180,6 @@ namespace App1
                 listView.Items.Add(item.BlockGrid);
             }
 
-        }
-
-        private void onInsertToDb(object sender, RoutedEventArgs e)
-        {
-            Database db = new Database();
-            db.createDB();
         }
 
     }
