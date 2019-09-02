@@ -9,7 +9,8 @@ namespace App1.Scripts
 
     class Database
     {
-        //public SQLiteConnection connection = new SQLiteConnection("ms-appx:///HereIam.db");
+        private SQLiteConnection con;
+
         private static Database _instance;
 
         public static Database Instance {
@@ -23,7 +24,11 @@ namespace App1.Scripts
                 return _instance;
             }
         }
-        
+        private Database()
+        {
+            con = new SQLiteConnection("data source=newDatabase.db");
+        }
+
         public void createDB()
         {
             string createQuery = @"CREATE TABLE IF NOT EXISTS
@@ -32,8 +37,8 @@ namespace App1.Scripts
                                 [URL] NVARCHAR(2048)
                                 )";
            // SQLiteConnection.CreateFile("newDatabase.db");
-            using (SQLiteConnection con = new SQLiteConnection("data source=newDatabase.db"))
-            {
+           // using (SQLiteConnection con = new SQLiteConnection("data source=newDatabase.db"))
+           // {
                 using (SQLiteCommand cmd = new SQLiteCommand(con))
                 {
                     con.Open();
@@ -42,19 +47,24 @@ namespace App1.Scripts
                     cmd.CommandText = "INSERT INTO Mytable(URL) VALUES ('TESTURLVALUE')";
                     cmd.ExecuteNonQuery();
                 }
-            }
+           // }
         }
         public void insertIntoDB(string url)
         {
-            using (SQLiteConnection con = new SQLiteConnection("data source=newDatabase.db"))
-            {
+            //using (SQLiteConnection con = new SQLiteConnection("data source=newDatabase.db"))
+           // {
                 using (SQLiteCommand cmd = new SQLiteCommand(con))
                 {
                     con.Open();
                     cmd.CommandText = $"INSERT INTO Mytable(URL) VALUES ('{url}')";
                     cmd.ExecuteNonQuery();
                 }
-            }
+           // }
+        }
+
+        ~Database()
+        {
+            con.Dispose();
         }
     }
 }
