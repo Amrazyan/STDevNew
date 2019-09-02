@@ -58,33 +58,7 @@
                             Foreground="#1da1f2"/>
                     </Border>
                 </Button>
-                <Button 
-                x:Name="insertDB"
-                Click="onInsertToDb"
-                HorizontalAlignment="Center"
-                Padding="0"
-                Margin="0,50,0,0">
-
-                    <Border 
-                        CornerRadius="23" 
-                        Background="Transparent" 
-                        BorderBrush="#1da1f2" 
-                        BorderThickness="1.5"
-                        Height="40" 
-                        Padding="15,0,15,0"
-                        Margin="0">
-
-                        <TextBlock 
-                            Text="Insert" 
-                            FontSize="16"
-                            FontFamily="Arial"
-                        
-                            VerticalAlignment="Center"
-                            Margin="0"
-                            Padding="0"
-                            Foreground="#1da1f2"/>
-                    </Border>
-                </Button>
+                
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <TextBlock 

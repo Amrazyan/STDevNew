@@ -68,13 +68,6 @@ namespace App1
         }
 
 
-        private void onInsertToDb(object sender, RoutedEventArgs e)
-        {
-            Database db = new Database();
-            db.createDB();
-        }
-
-
         private async void CloseButton_Click(object sender, RoutedEventArgs e, Block myBlock)
         {
             infoMessageBox.Text = "In close button func : ";
