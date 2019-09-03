@@ -19,7 +19,7 @@ namespace App1.Scripts
         {
             public override int Compare(Block x, Block y)
             {
-                return string.Compare(x.Link, y.Link);
+                return string.Compare(x.URL, y.URL);
             }
         }
         public class SortListByTime : SortList

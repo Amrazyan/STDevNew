@@ -12,26 +12,28 @@ namespace App1.Scripts
 {
     public class Block
     {
-        private string _link;
+        private int _id;
+        private string _url;
         private Grid _grid;
         private Image _image;
-        private TimeSpan _timeTaken;
+        private float _timeTaken;
         private TextBlock _timeTextBlock;
         private bool _isAvailable;
         private Button _closeButton;
 
-        public string Link { get { return _link; } }
+        public int Id { get { return _id; } set { _id = value; } }
+        public string URL { get { return _url; } }
         public Grid BlockGrid { get { return _grid; } }
         public Image BlockImage { get { return _image; } }
-        public TimeSpan TimeTaken { get { return _timeTaken; } set { _timeTaken = value; } }
+        public float TimeTaken { get { return _timeTaken; } set { _timeTaken = value; } }
         public TextBlock TimeTextBlock { get { return _timeTextBlock; } set { _timeTextBlock = value; } }
         public bool IsAvailable { get { return _isAvailable; } set { _isAvailable = value; } }
         public Button CloseButton { get { return _closeButton; } set { _closeButton = value; } }
 
 
-        public Block(string link)
+        public Block(string url)
         {
-            _link = link;
+            _url = url;
         }
 
         public enum isReachableEnum
@@ -59,7 +61,7 @@ namespace App1.Scripts
 
             TextBlock textBlock = new TextBlock
             {
-                Text = _link,
+                Text = _url,
                 FontSize = 14,
                 Foreground = new SolidColorBrush("#1da1f2".GetColorFromHex()),
                 Style = (Style)Application.Current.Resources["HeaderTextBlockStyle"],
@@ -80,7 +82,7 @@ namespace App1.Scripts
 
             TextBlock timeBlock = new TextBlock
             {
-                Text = "00:00",
+                Text = TimeTaken.ToString("0.000"),
                 FontSize = 14,
                 Padding = new Thickness(10, 0, 0, 0),
                 Foreground = new SolidColorBrush("#1da1f2".GetColorFromHex()),
@@ -116,7 +118,7 @@ namespace App1.Scripts
 
         public override string ToString()
         {
-            return _link.ToString();
+            return _url.ToString();
         }
         public override bool Equals(object obj)
         {

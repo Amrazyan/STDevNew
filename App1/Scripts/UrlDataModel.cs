@@ -11,5 +11,6 @@ namespace App1.Scripts
         public int Id;
         public string Url;
         public int IsReachable;
+        public float ResponseTime;
     }
 }

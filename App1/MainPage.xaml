@@ -24,7 +24,8 @@
                 x:Name="inputBox"
                 Width="300"
                 HorizontalAlignment="Center"
-                Text="TextBox" 
+                Text=""
+                    PlaceholderText="Input url"
                 FontSize="20"
                 Foreground="#1da1f2"
                 Background="Transparent"
@@ -64,7 +65,7 @@
                 <TextBlock 
                     x:Name="infoMessageBox"
                     HorizontalAlignment="Left" 
-                    Text="TextBlock" 
+                    Text="" 
                     FontSize="27"
                     Foreground="#1da1f2"
                     TextWrapping="Wrap" 

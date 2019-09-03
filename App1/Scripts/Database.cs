@@ -28,11 +28,25 @@ namespace App1.Scripts
                 return _instance;
             }
         }
+
         private Database()
         {
             con = new SQLiteConnection("data source=newDatabase.db");
+            con.Open();
         }
-
+        //public void addColumn()
+        //{
+        //    using (SQLiteConnection con = new SQLiteConnection("data source=newDatabase.db"))
+        //    {
+        //        using (SQLiteCommand cmd = new SQLiteCommand(con))
+        //        {
+        //            con.Open();
+        //            //cmd.CommandText = $"ALTER TABLE Mytable ADD COLUMN ResponseTime float";
+        //            cmd.CommandText = $"ALTER TABLE Mytable DROP COLUMN ResponseTime;";
+        //            cmd.ExecuteNonQuery();
+        //        }
+        //    }
+        //}
         public void createDB()
         {
             string createQuery = @"CREATE TABLE IF NOT EXISTS
@@ -53,27 +67,37 @@ namespace App1.Scripts
                 }
            // }
         }
-        public void insertIntoDB(string url,bool isReachable)
+        public void insertIntoDB(Block block, bool isReachable)
         {
-            using (SQLiteConnection con = new SQLiteConnection("data source=newDatabase.db"))
             {
                 using (SQLiteCommand cmd = new SQLiteCommand(con))
                 {
-                    con.Open();
-                    cmd.CommandText = $"INSERT INTO Mytable(URL,IsReachable) VALUES ('{url}','{Convert.ToInt32(isReachable)}')";
+                    cmd.CommandText = $"INSERT INTO Mytable(URL,IsReachable,ResponseTime) VALUES ('{block.URL}','{Convert.ToInt32(isReachable)}','{block.TimeTaken}')";
                     cmd.ExecuteNonQuery();
+                 
+                    cmd.CommandText = "SELECT last_insert_rowid()";
+
+                    block.Id = Convert.ToInt32(cmd.ExecuteScalar());
+                    
                 }
             }
         }
         public List<UrlDataModel> getAllData()
-        {      
-            using (SQLiteConnection con = new SQLiteConnection("data source=newDatabase.db"))
+        {
+
+            var output = con.Query<UrlDataModel>("SELECT * FROM Mytable", new DynamicParameters());
+
+            return output.ToList();
+        }
+
+        public void deleteById(int id)
+        {
+
+            using (SQLiteCommand cmd = new SQLiteCommand(con))
             {
-                var output = con.Query<UrlDataModel>("SELECT * FROM Mytable", new DynamicParameters());
-
-                return output.ToList();
-            }
-
+                cmd.CommandText = $"DELETE FROM Mytable WHERE Id = {id}";
+                cmd.ExecuteNonQuery();
+            }                
         }
 
         ~Database()
