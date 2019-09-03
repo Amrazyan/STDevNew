@@ -31,7 +31,7 @@ namespace App1
         private bool timeSortOrder = true;
         private bool availabilitySortOrder = true;
 
-
+        private Action sortingAlgorithm;
         public MainPage()
         {
             this.InitializeComponent();
@@ -56,20 +56,21 @@ namespace App1
         private void sortByName(object sender, RoutedEventArgs e)
         {
             nameSortOrder = !nameSortOrder;
-            sortList(nameSortOrder, new SortinListAlgorithms.SortListByName());
+            (sortingAlgorithm = () => sortList (nameSortOrder, new SortinListAlgorithms.SortListByName())).Invoke();
         }
 
         private void sortByTime(object sender, RoutedEventArgs e)
         {
             timeSortOrder = !timeSortOrder;
-            sortList(timeSortOrder, new SortinListAlgorithms.SortListByTime());
+            (sortingAlgorithm = () => sortList(timeSortOrder, new SortinListAlgorithms.SortListByTime())).Invoke();
         }
 
         private void sortByAvailability(object sender, RoutedEventArgs e)
         {
             availabilitySortOrder = !availabilitySortOrder;
             infoMessageBox.Text = availabilitySortOrder.ToString();
-            sortList(availabilitySortOrder, new SortinListAlgorithms.SortListByAvailability());
+
+            (sortingAlgorithm = () => sortList(availabilitySortOrder, new SortinListAlgorithms.SortListByAvailability())).Invoke();
         }
 
         private void searchAll(object sender, RoutedEventArgs e)
@@ -114,10 +115,12 @@ namespace App1
             {
                 checkValues(item);
             }
+            sortingAlgorithm?.Invoke();
 
         }
         private void checkValues(Block block)
         {
+    
             System.Diagnostics.Stopwatch timer = new System.Diagnostics.Stopwatch();
 
             timer.Start();
@@ -125,7 +128,7 @@ namespace App1
             block.BlockImage.Source = new BitmapImage(new Uri("ms-appx:///Assets/loading.gif"));
             block.TimeTaken = 0;
 
-            listView.Items.Add(block.BlockGrid);
+            //listView.Items.Add(block.BlockGrid);
 
             checkUrlAvailability(block);
 
@@ -141,7 +144,7 @@ namespace App1
                 return;
             }
 
-            dataCollectionList.Add(block);/////////////////////////////////////////////////////////////////////
+            dataCollectionList.Add(block);
 
             listView.Items.Add(block.BlockGrid);
 
@@ -205,6 +208,7 @@ namespace App1
             {
                 listView.Items.Add(item.BlockGrid);
             }
+            
 
         }
 

@@ -21,7 +21,7 @@ namespace App1.Scripts
         private bool _isAvailable;
         private Button _closeButton;
 
-        public int Id { get { return _id; } set { _id = value; } }
+        public int Id { get { return _id; } set { _id = value > 0 ? value : 0 ; } }
         public string URL { get { return _url; } }
         public Grid BlockGrid { get { return _grid; } }
         public Image BlockImage { get { return _image; } }

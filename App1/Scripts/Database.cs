@@ -34,19 +34,7 @@ namespace App1.Scripts
             con = new SQLiteConnection("data source=newDatabase.db");
             con.Open();
         }
-        //public void addColumn()
-        //{
-        //    using (SQLiteConnection con = new SQLiteConnection("data source=newDatabase.db"))
-        //    {
-        //        using (SQLiteCommand cmd = new SQLiteCommand(con))
-        //        {
-        //            con.Open();
-        //            //cmd.CommandText = $"ALTER TABLE Mytable ADD COLUMN ResponseTime float";
-        //            cmd.CommandText = $"ALTER TABLE Mytable DROP COLUMN ResponseTime;";
-        //            cmd.ExecuteNonQuery();
-        //        }
-        //    }
-        //}
+
         public void createDB()
         {
             string createQuery = @"CREATE TABLE IF NOT EXISTS
@@ -54,19 +42,17 @@ namespace App1.Scripts
                                 [Id] INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
                                 [URL] NVARCHAR(2048)
                                 )";
-           // SQLiteConnection.CreateFile("newDatabase.db");
-           // using (SQLiteConnection con = new SQLiteConnection("data source=newDatabase.db"))
-           // {
-                using (SQLiteCommand cmd = new SQLiteCommand(con))
-                {
-                    con.Open();
-                    cmd.CommandText = createQuery;
-                    cmd.ExecuteNonQuery();
-                    cmd.CommandText = "INSERT INTO Mytable(URL) VALUES ('TESTURLVALUE')";
-                    cmd.ExecuteNonQuery();
-                }
-           // }
+      
+            using (SQLiteCommand cmd = new SQLiteCommand(con))
+            {
+                cmd.CommandText = createQuery;
+                cmd.ExecuteNonQuery();
+                cmd.CommandText = "INSERT INTO Mytable(URL) VALUES ('TESTURLVALUE')";
+                cmd.ExecuteNonQuery();
+            }
         }
+
+
         public void insertIntoDB(Block block, bool isReachable)
         {
             {
