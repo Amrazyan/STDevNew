@@ -35,6 +35,7 @@ namespace App1
         public MainPage()
         {
             this.InitializeComponent();
+            Database.Instance.createDB();
             initValues();
         }
         private void initValues()

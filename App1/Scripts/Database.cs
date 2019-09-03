@@ -31,7 +31,9 @@ namespace App1.Scripts
 
         private Database()
         {
-            con = new SQLiteConnection("data source=newDatabase.db");
+            System.Data.SQLite.SQLiteConnection.CreateFile("aaaaaaaaaaaaaaaa.db");
+
+            con = new SQLiteConnection("data source=aaaaaaaaaaaaaaaa.db");
             con.Open();
         }
 
