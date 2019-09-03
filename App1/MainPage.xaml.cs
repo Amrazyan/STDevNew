@@ -44,6 +44,7 @@ namespace App1
             {
                 Block block = createBlock(item.Url,(Block.isReachableEnum)item.IsReachable,item.ResponseTime);
                 block.Id = item.Id;
+                block.IsAvailable = Convert.ToBoolean( item.IsReachable );
                 dataCollectionList.Add(block);
                 listView.Items.Add(block.BlockGrid);
             }
@@ -56,21 +57,24 @@ namespace App1
         private void sortByName(object sender, RoutedEventArgs e)
         {
             nameSortOrder = !nameSortOrder;
-            (sortingAlgorithm = () => sortList (nameSortOrder, new SortinListAlgorithms.SortListByName())).Invoke();
+            sortingAlgorithm = () => sortList (nameSortOrder, new SortinListAlgorithms.SortListByName());
+            sortingAlgorithm?.Invoke();
         }
 
         private void sortByTime(object sender, RoutedEventArgs e)
         {
             timeSortOrder = !timeSortOrder;
-            (sortingAlgorithm = () => sortList(timeSortOrder, new SortinListAlgorithms.SortListByTime())).Invoke();
+            sortingAlgorithm = () => sortList(timeSortOrder, new SortinListAlgorithms.SortListByTime());
+            sortingAlgorithm?.Invoke();
         }
 
         private void sortByAvailability(object sender, RoutedEventArgs e)
         {
             availabilitySortOrder = !availabilitySortOrder;
-            infoMessageBox.Text = availabilitySortOrder.ToString();
 
-            (sortingAlgorithm = () => sortList(availabilitySortOrder, new SortinListAlgorithms.SortListByAvailability())).Invoke();
+            //infoMessageBox.Text = availabilitySortOrder.ToString();
+            sortingAlgorithm = () => sortList(availabilitySortOrder, new SortinListAlgorithms.SortListByAvailability());
+            sortingAlgorithm?.Invoke();
         }
 
         private void searchAll(object sender, RoutedEventArgs e)
@@ -128,8 +132,7 @@ namespace App1
             block.BlockImage.Source = new BitmapImage(new Uri("ms-appx:///Assets/loading.gif"));
             block.TimeTaken = 0;
 
-            //listView.Items.Add(block.BlockGrid);
-
+            listView.Items.Add(block.BlockGrid);
             checkUrlAvailability(block);
 
         }
