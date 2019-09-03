@@ -61,6 +61,20 @@ namespace App1.Scripts
                 }
            // }
         }
+        public void getAllData()
+        {
+            using (SQLiteCommand cmd = new SQLiteCommand(con))
+            {
+                string comText = $"SELECT Url FROM Mytable";
+                con.Open();
+                // cmd.CommandText = comText;
+                SQLiteDataAdapter dataAdapter = new SQLiteDataAdapter(comText, con);
+
+                //cmd.ExecuteNonQuery();
+
+                con.Close();
+            }
+        }
 
         ~Database()
         {
