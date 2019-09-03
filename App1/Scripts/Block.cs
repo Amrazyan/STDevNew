@@ -33,8 +33,22 @@ namespace App1.Scripts
         {
             _link = link;
         }
+
+        public enum isReachableEnum
+        {
+            NotReachable,
+            Rechable,
+            DoesntCheckedYet
+        }
+        string[] gifs = new string[]
+        {
+            "ms-appx:///Assets/failed.png",
+            "ms-appx:///Assets/success.png",
+            "ms-appx:///Assets/loading.gif"
+        };
+     
         //Tuple
-        public (Grid grid, Image img) initBlock()
+        public void initBlock(isReachableEnum isReachableEnum )
         {
             Grid grid = new Grid();
             grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
@@ -56,7 +70,7 @@ namespace App1.Scripts
 
             Image img = new Image
             {
-                Source = new BitmapImage(new Uri("ms-appx:///Assets/loading.gif")),
+                Source = new BitmapImage(new Uri(gifs[(int)isReachableEnum])),
                 Width = 20,
                 Margin = new Thickness(0)
             };
@@ -97,8 +111,6 @@ namespace App1.Scripts
             this._closeButton = closeBtn;
             this._grid = grid;
             this._image = img;
-
-            return (grid, img);
         }
 
 

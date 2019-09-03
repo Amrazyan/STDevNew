@@ -1,6 +1,10 @@
 ﻿
 
+using Dapper;
+using System.Collections.Generic;
 using System.Data.SQLite;
+using System.Linq;
+using System;
 using Windows.Storage;
 using Windows.UI.Xaml;
 
@@ -49,31 +53,27 @@ namespace App1.Scripts
                 }
            // }
         }
-        public void insertIntoDB(string url)
+        public void insertIntoDB(string url,bool isReachable)
         {
-            //using (SQLiteConnection con = new SQLiteConnection("data source=newDatabase.db"))
-           // {
+            using (SQLiteConnection con = new SQLiteConnection("data source=newDatabase.db"))
+            {
                 using (SQLiteCommand cmd = new SQLiteCommand(con))
                 {
                     con.Open();
-                    cmd.CommandText = $"INSERT INTO Mytable(URL) VALUES ('{url}')";
+                    cmd.CommandText = $"INSERT INTO Mytable(URL,IsReachable) VALUES ('{url}','{Convert.ToInt32(isReachable)}')";
                     cmd.ExecuteNonQuery();
                 }
-           // }
-        }
-        public void getAllData()
-        {
-            using (SQLiteCommand cmd = new SQLiteCommand(con))
-            {
-                string comText = $"SELECT Url FROM Mytable";
-                con.Open();
-                // cmd.CommandText = comText;
-                SQLiteDataAdapter dataAdapter = new SQLiteDataAdapter(comText, con);
-
-                //cmd.ExecuteNonQuery();
-
-                con.Close();
             }
+        }
+        public List<UrlDataModel> getAllData()
+        {      
+            using (SQLiteConnection con = new SQLiteConnection("data source=newDatabase.db"))
+            {
+                var output = con.Query<UrlDataModel>("SELECT * FROM Mytable", new DynamicParameters());
+
+                return output.ToList();
+            }
+
         }
 
         ~Database()

@@ -35,13 +35,22 @@ namespace App1
         public MainPage()
         {
             this.InitializeComponent();
+            initValues();
         }
-
+        private void initValues()
+        {
+            List<UrlDataModel> urls = Database.Instance.getAllData();
+            foreach (var item in urls)
+            {
+                //addItemsToList(item.Url);
+                Block block = createBlock(item.Url,(Block.isReachableEnum)item.IsReachable);
+                dataCollectionList.Add(block);
+                listView.Items.Add(block.BlockGrid);
+            }
+        }
         private void onSubmitClick(object sender, RoutedEventArgs e)
         {
-
             addItemsToList(inputBox.Text);
-
         }
 
         private void sortByName(object sender, RoutedEventArgs e)
@@ -64,7 +73,7 @@ namespace App1
 
         private void searchAll(object sender, RoutedEventArgs e)
         {
-            checkAllAgain();
+            checkAll();
         }
 
 
@@ -95,16 +104,53 @@ namespace App1
 
         }
 
-        private void checkAllAgain()
+        private void checkAll()
         {
-            List<Block> localDataCollectionList = new List<Block>(dataCollectionList);
-            dataCollectionList.Clear();
+            //List<Block> localDataCollectionList = new List<Block>(dataCollectionList);
+            //dataCollectionList.Clear();
             listView.Items.Clear();
 
-            foreach (var item in localDataCollectionList)
+            foreach (var item in dataCollectionList)
             {
-                addItemsToList(item.Link);
+                //addItemsToList(item.Link);
+                checkValues(item);
             }
+
+        }
+        private void checkValues(Block block)
+        {
+            System.Diagnostics.Stopwatch timer = new System.Diagnostics.Stopwatch();
+
+            timer.Start();
+
+            block.initBlock(Block.isReachableEnum.DoesntCheckedYet);
+
+            listView.Items.Add(block.BlockGrid);
+
+            MakeRequest.UrlIsValid(block.Link, () =>
+            {
+                timer.Stop();
+                block.TimeTaken = timer.Elapsed;
+                block.IsAvailable = true;
+                //Database.Instance.insertIntoDB(block.Link, true);
+                //   block.CloseButton.Click += delegate (object sender, RoutedEventArgs e) { CloseButton_Click(sender, e, block); };
+                ExpandingMethods.changeUiFromAnotherThread(() => infoMessageBox.Text = "Site is valid");
+                ExpandingMethods.changeUiFromAnotherThread(() => block.TimeTextBlock.Text = block.TimeTaken.TotalSeconds.ToString("0.000"));
+                ExpandingMethods.changeUiFromAnotherThread(() => block.BlockImage.Source = new BitmapImage(new Uri("ms-appx:///Assets/success.png")));
+            },
+            () =>
+            {
+                timer.Stop();
+                block.TimeTaken = timer.Elapsed;
+                block.IsAvailable = false;
+                //Database.Instance.insertIntoDB(block.Link, false);
+                // block.CloseButton.Click += delegate (object sender, RoutedEventArgs e) { CloseButton_Click(sender, e, block); };
+                ExpandingMethods.changeUiFromAnotherThread(() => infoMessageBox.Text = "Site is NOT valid");
+                ExpandingMethods.changeUiFromAnotherThread(() => block.TimeTextBlock.Text = block.TimeTaken.TotalSeconds.ToString("0.000"));
+                ExpandingMethods.changeUiFromAnotherThread(() => block.BlockImage.Source = new BitmapImage(new Uri("ms-appx:///Assets/failed.png")));
+
+            });
+
 
         }
         private void addItemsToList(string link)
@@ -117,18 +163,17 @@ namespace App1
                 infoMessageBox.Text = "Same value " + link;
                 return;
             }
-            
-            Database.Instance.insertIntoDB(link);
-
-            var data = block.initBlock();
+         
+            block.initBlock(Block.isReachableEnum.DoesntCheckedYet);
 
             dataCollectionList.Add(block);/////////////////////////////////////////////////////////////////////
 
-            listView.Items.Add(data.grid);
+            listView.Items.Add(block.BlockGrid);
 
-            System.Diagnostics.Stopwatch timer = new System.Diagnostics.Stopwatch();
 
             block.CloseButton.Click += delegate (object sender, RoutedEventArgs e) { CloseButton_Click(sender, e, block); };
+
+            System.Diagnostics.Stopwatch timer = new System.Diagnostics.Stopwatch();
 
             timer.Start();
 
@@ -137,7 +182,7 @@ namespace App1
                 timer.Stop();
                 block.TimeTaken = timer.Elapsed;
                 block.IsAvailable = true;
-             //   block.CloseButton.Click += delegate (object sender, RoutedEventArgs e) { CloseButton_Click(sender, e, block); };
+                Database.Instance.insertIntoDB(block.Link,true);
                 ExpandingMethods.changeUiFromAnotherThread(() => infoMessageBox.Text = "Site is valid");
                 ExpandingMethods.changeUiFromAnotherThread(() => block.TimeTextBlock.Text = block.TimeTaken.TotalSeconds.ToString("0.000"));
                 ExpandingMethods.changeUiFromAnotherThread(() => block.BlockImage.Source = new BitmapImage(new Uri("ms-appx:///Assets/success.png")));
@@ -147,14 +192,28 @@ namespace App1
                 timer.Stop();
                 block.TimeTaken = timer.Elapsed;
                 block.IsAvailable = false;
-               // block.CloseButton.Click += delegate (object sender, RoutedEventArgs e) { CloseButton_Click(sender, e, block); };
+                Database.Instance.insertIntoDB(block.Link, false);
                 ExpandingMethods.changeUiFromAnotherThread(() => infoMessageBox.Text = "Site is NOT valid");
                 ExpandingMethods.changeUiFromAnotherThread(() => block.TimeTextBlock.Text = block.TimeTaken.TotalSeconds.ToString("0.000"));
                 ExpandingMethods.changeUiFromAnotherThread(() => block.BlockImage.Source = new BitmapImage(new Uri("ms-appx:///Assets/failed.png")));
 
             });
         }
+        private Block createBlock(string link,Block.isReachableEnum isReachable)
+        {
+            Block block = new Block(link);
 
+            block.initBlock(isReachable);
+
+            block.CloseButton.Click += delegate (object sender, RoutedEventArgs e) { CloseButton_Click(sender, e, block); };
+
+            return block;
+
+        }
+        private void checkUrlAvailability()
+        {
+
+        }
  
 
         private void sortList(bool isAscending, SortinListAlgorithms.SortList sortListAlgorithm)
