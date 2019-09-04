@@ -10,7 +10,7 @@ namespace App1.Scripts
     {
         public class SortList : IComparer<Block>
         {
-            public virtual int Compare(Block x, Block y)
+            public virtual int  Compare(Block x, Block y)
             {
                 throw new NotImplementedException();
             }

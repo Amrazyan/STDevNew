@@ -15,6 +15,9 @@ using Windows.UI.Xaml.Navigation;
 using System.Data.SQLite;
 using App1.Scripts;
 using Windows.UI.Xaml.Media.Imaging;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
+using Microsoft.Win32;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -30,14 +33,14 @@ namespace App1
         private bool nameSortOrder = true;
         private bool timeSortOrder = true;
         private bool availabilitySortOrder = true;
-
         private Action sortingAlgorithm;
+
         public MainPage()
         {
             this.InitializeComponent();
-            Database.Instance.createDB();
             initValues();
         }
+
         private void initValues()
         {
             List<UrlDataModel> urls = Database.Instance.getAllData();
@@ -73,7 +76,6 @@ namespace App1
         {
             availabilitySortOrder = !availabilitySortOrder;
 
-            //infoMessageBox.Text = availabilitySortOrder.ToString();
             sortingAlgorithm = () => sortList(availabilitySortOrder, new SortinListAlgorithms.SortListByAvailability());
             sortingAlgorithm?.Invoke();
         }
@@ -157,10 +159,7 @@ namespace App1
         }
         private Block createBlock(string link,Block.isReachableEnum isReachable,float responseTime)
         {
-            Block block = new Block(link);
-
-            block.TimeTaken = responseTime;
-            block.initBlock(isReachable);
+            Block block = new Block(link,isReachable, responseTime);
             block.CloseButton.Click += delegate (object sender, RoutedEventArgs e) { CloseButton_Click(sender, e, block); };
 
             return block;
@@ -216,5 +215,48 @@ namespace App1
 
         }
 
+        private void onSearchUrl(object sender, RoutedEventArgs e)
+        {
+            string chromePath = @"C:\ProgramFiles(x86)\Google\Chrome\Application\chrome.exe";
+            string url = "http://stackoverflow.com";
+
+            string browserPath = GetSystemDefaultBrowser();
+            Process.Start(chromePath, url);
+        }
+
+        internal string GetSystemDefaultBrowser()
+        {
+            string name = string.Empty;
+            RegistryKey regKey = null;
+
+            try
+            {
+                //set the registry key we want to open
+                regKey = Registry.ClassesRoot.OpenSubKey("HTTP\\shell\\open\\command", false);
+
+                //get rid of the enclosing quotes
+                name = regKey.GetValue(null).ToString().ToLower().Replace("" + (char)34, "");
+
+                //check to see if the value ends with .exe (this way we can remove any command line arguments)
+                if (!name.EndsWith("exe"))
+                    //get rid of all command line arguments (anything after the .exe must go)
+                    name = name.Substring(0, name.LastIndexOf(".exe") + 4);
+
+            }
+            catch (Exception ex)
+            {
+                name = string.Format("ERROR: An exception of type: {0} occurred in method: {1} in the following module: {2}", ex.GetType(), ex.TargetSite, this.GetType());
+            }
+            finally
+            {
+                //check and see if the key is still open, if so
+                //then close it
+                if (regKey != null)
+                    regKey.Close();
+            }
+            //return the value
+            return name;
+
+        }
     }
 }

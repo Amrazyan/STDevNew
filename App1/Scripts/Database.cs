@@ -31,6 +31,7 @@ namespace App1.Scripts
         }
 
         private string databaseName = "newDatabase.db";
+        private string tableName = "Mytable";
 
         private Database()
         {
@@ -41,12 +42,14 @@ namespace App1.Scripts
 
             con = new SQLiteConnection($"data source={databaseName}");
             con.Open();
+
+            createDB();
         }
 
-        public void createDB()
+        private void createDB()
         {
-            string createQuery = @"CREATE TABLE IF NOT EXISTS
-                                [Mytable](
+            string createQuery = $@"CREATE TABLE IF NOT EXISTS
+                                [{tableName}](
                                 [Id] INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
                                 [URL] NVARCHAR(2048),
                                 [IsReachable] INTEGER,
@@ -56,9 +59,7 @@ namespace App1.Scripts
             using (SQLiteCommand cmd = new SQLiteCommand(con))
             {
                 cmd.CommandText = createQuery;
-                cmd.ExecuteNonQuery();
-                //cmd.CommandText = "INSERT INTO Mytable(URL) VALUES ('TESTURLVALUE')";
-                //cmd.ExecuteNonQuery();
+                cmd.ExecuteNonQuery();                
             }
         }
 
@@ -68,7 +69,7 @@ namespace App1.Scripts
             {
                 using (SQLiteCommand cmd = new SQLiteCommand(con))
                 {
-                    cmd.CommandText = $"INSERT INTO Mytable(URL,IsReachable,ResponseTime) VALUES ('{block.URL}','{Convert.ToInt32(isReachable)}','{block.TimeTaken}')";
+                    cmd.CommandText = $"INSERT INTO {tableName}(URL,IsReachable,ResponseTime) VALUES ('{block.URL}','{Convert.ToInt32(isReachable)}','{block.TimeTaken}')";
                     cmd.ExecuteNonQuery();
                  
                     cmd.CommandText = "SELECT last_insert_rowid()";
@@ -81,7 +82,7 @@ namespace App1.Scripts
         public List<UrlDataModel> getAllData()
         {
 
-            var output = con.Query<UrlDataModel>("SELECT * FROM Mytable", new DynamicParameters());
+            var output = con.Query<UrlDataModel>($"SELECT * FROM {tableName}", new DynamicParameters());
 
             return output.ToList();
         }
@@ -91,7 +92,7 @@ namespace App1.Scripts
 
             using (SQLiteCommand cmd = new SQLiteCommand(con))
             {
-                cmd.CommandText = $"DELETE FROM Mytable WHERE Id = {id}";
+                cmd.CommandText = $"DELETE FROM {tableName} WHERE Id = {id}";
                 cmd.ExecuteNonQuery();
             }                
         }

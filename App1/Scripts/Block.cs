@@ -30,12 +30,6 @@ namespace App1.Scripts
         public bool IsAvailable { get { return _isAvailable; } set { _isAvailable = value; } }
         public Button CloseButton { get { return _closeButton; } set { _closeButton = value; } }
 
-
-        public Block(string url)
-        {
-            _url = url;
-        }
-
         public enum isReachableEnum
         {
             NotReachable,
@@ -49,8 +43,16 @@ namespace App1.Scripts
             "ms-appx:///Assets/loading.gif"
         };
      
+
+        public Block(string url, isReachableEnum isReachableEnum,float responseTime)
+        {
+            _url = url;
+            _timeTaken = responseTime;
+            initBlock(isReachableEnum);
+        }
+
         //Tuple
-        public void initBlock(isReachableEnum isReachableEnum )
+        private void initBlock(isReachableEnum isReachableEnum )
         {
             Grid grid = new Grid();
             grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
