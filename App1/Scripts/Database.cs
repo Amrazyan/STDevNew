@@ -7,6 +7,7 @@ using System.Linq;
 using System;
 using Windows.Storage;
 using Windows.UI.Xaml;
+using System.IO;
 
 namespace App1.Scripts
 {
@@ -29,11 +30,16 @@ namespace App1.Scripts
             }
         }
 
+        private string databaseName = "newDatabase.db";
+
         private Database()
         {
-            System.Data.SQLite.SQLiteConnection.CreateFile("aaaaaaaaaaaaaaaa.db");
+            if (!File.Exists(databaseName))
+            {
+                System.Data.SQLite.SQLiteConnection.CreateFile(databaseName);
+            }
 
-            con = new SQLiteConnection("data source=aaaaaaaaaaaaaaaa.db");
+            con = new SQLiteConnection($"data source={databaseName}");
             con.Open();
         }
 
@@ -42,15 +48,17 @@ namespace App1.Scripts
             string createQuery = @"CREATE TABLE IF NOT EXISTS
                                 [Mytable](
                                 [Id] INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-                                [URL] NVARCHAR(2048)
+                                [URL] NVARCHAR(2048),
+                                [IsReachable] INTEGER,
+                                [ResponseTime] FLOAT
                                 )";
       
             using (SQLiteCommand cmd = new SQLiteCommand(con))
             {
                 cmd.CommandText = createQuery;
                 cmd.ExecuteNonQuery();
-                cmd.CommandText = "INSERT INTO Mytable(URL) VALUES ('TESTURLVALUE')";
-                cmd.ExecuteNonQuery();
+                //cmd.CommandText = "INSERT INTO Mytable(URL) VALUES ('TESTURLVALUE')";
+                //cmd.ExecuteNonQuery();
             }
         }
 

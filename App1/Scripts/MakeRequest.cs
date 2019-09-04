@@ -12,8 +12,6 @@ namespace App1.Scripts
 {
     public class MakeRequest
     {
-        private static  System.Diagnostics.Stopwatch timer = new System.Diagnostics.Stopwatch();
-
         public static void UrlIsValid(string url, Action onSuccess, Action onFailed)
         {
             try
@@ -21,10 +19,8 @@ namespace App1.Scripts
                 HttpWebRequest request = HttpWebRequest.Create(url) as HttpWebRequest;
                 request.ContinueTimeout = 5000;
                 request.Method = "HEAD";
-
-
-
                 request.BeginGetResponse(responseCompleted, new MyContainer { conRequest = request, onSuccessAction = onSuccess,onFailedAction = onFailed });
+
             }
             catch (Exception)
             {
@@ -54,8 +50,6 @@ namespace App1.Scripts
                             container.onFailedAction?.Invoke();
                         }
                     }
-
-
                 }
                 catch (Exception)
                 {
