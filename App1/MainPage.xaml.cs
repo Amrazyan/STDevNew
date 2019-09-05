@@ -1,24 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
-using System.Data.SQLite;
 using App1.Scripts;
 using Windows.UI.Xaml.Media.Imaging;
-using System.Diagnostics;
-using System.Runtime.InteropServices;
-using Microsoft.Win32;
-using System.Text.RegularExpressions;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -35,6 +20,7 @@ namespace App1
         private bool timeSortOrder = true;
         private bool availabilitySortOrder = true;
         private Action sortingAlgorithm;
+        private string uriToLaunch;
 
         public MainPage()
         {
@@ -42,21 +28,10 @@ namespace App1
             initValues();
         }
 
-        private void initValues()
-        {
-            List<UrlDataModel> urls = Database.Instance.getAllData();
-            foreach (var item in urls)
-            {
-                Block block = createBlock(item.Url,(Block.isReachableEnum)item.IsReachable,item.ResponseTime);
-                block.Id = item.Id;
-                block.IsAvailable = Convert.ToBoolean( item.IsReachable );
-                dataCollectionList.Add(block);
-                listView.Items.Add(block.BlockGrid);
-            }
-        }
+        #region SystemEvents
         private void onSubmitClick(object sender, RoutedEventArgs e)
         {
-            addItemsToList(inputBox.Text);
+            checkUrl(() => addItemsToList(uriToLaunch));
         }
 
         private void sortByName(object sender, RoutedEventArgs e)
@@ -101,7 +76,6 @@ namespace App1
             }
             else
             {
-                infoMessageBox.Text = myBlock.Id.ToString();
 
                 Database.Instance.deleteById(myBlock.Id);
 
@@ -113,6 +87,26 @@ namespace App1
                 }
             }
 
+        }
+
+        private void onSearchUrl(object sender, RoutedEventArgs e)
+        {
+            checkUrl(launch);
+        }
+        #endregion
+
+
+        private void initValues()
+        {
+            List<UrlDataModel> urls = Database.Instance.getAllData();
+            foreach (var item in urls)
+            {
+                Block block = createBlock(item.Url,(Block.isReachableEnum)item.IsReachable,item.ResponseTime);
+                block.Id = item.Id;
+                block.IsAvailable = Convert.ToBoolean( item.IsReachable );
+                dataCollectionList.Add(block);
+                listView.Items.Add(block.BlockGrid);
+            }
         }
 
         private void checkAll()
@@ -142,7 +136,7 @@ namespace App1
         }
         private void addItemsToList(string link)
         {
-
+            
             Block block = createBlock(link, Block.isReachableEnum.DoesntCheckedYet,0);
 
             if (dataCollectionList.Contains(block))
@@ -215,27 +209,25 @@ namespace App1
             
 
         }
-
-        private void onSearchUrl(object sender, RoutedEventArgs e)
-        {            
-
-            Launch();
-
-        }
-        async void Launch()
+        void checkUrl(Action callback)
         {
-            string uriToLaunch = $@"{inputBox.Text}";
+            uriToLaunch = $@"{inputBox.Text}";
 
-            if (!IsUrlValid(uriToLaunch))
+            if (!MakeRequest.IsUrlRegexValid(uriToLaunch))
             {
                 infoMessageBox.Text = "URL is not valid";
                 return;
             }
 
-            if (!uriToLaunch.StartsWith("https:\\"))
+            if (!uriToLaunch.StartsWith("https://"))
             {
-                uriToLaunch = @"https:\\" + uriToLaunch;
+                uriToLaunch = @"https://" + uriToLaunch;
             }
+
+            callback?.Invoke();
+        }
+        async void launch()
+        {
             try
             {
                 var uri = new Uri(uriToLaunch);
@@ -249,40 +241,7 @@ namespace App1
             
 
         }
-        private bool IsUrlValid(string url)
-        {
-
-            string pattern = @"^(http|https|ftp|)\://|[a-zA-Z0-9\-\.]+\.[a-zA-Z](:[a-zA-Z0-9]*)?/?([a-zA-Z0-9\-\._\?\,\'/\\\+&amp;%\$#\=~])*[^\.\,\)\(\s]$";
-            Regex reg = new Regex(pattern, RegexOptions.Compiled | RegexOptions.IgnoreCase);
-            return reg.IsMatch(url);
-        }
-        //private string GetSystemDefaultBrowser()
-        //{
-        //    string name = string.Empty;
-        //    RegistryKey regKey = null;
-
-        //    try
-        //    {
-        //        regKey = Registry.ClassesRoot.OpenSubKey("HTTP\\shell\\open\\command", false);
-
-        //        name = regKey.GetValue(null).ToString().ToLower().Replace("" + (char)34, "");
-
-        //        if (!name.EndsWith("exe"))
-        //            name = name.Substring(0, name.LastIndexOf(".exe") + 4);
-
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        name = string.Format("ERROR: An exception of type: {0} occurred in method: {1} in the following module: {2}", ex.GetType(), ex.TargetSite, this.GetType());
-        //    }
-        //    finally
-        //    {
-
-        //        if (regKey != null)
-        //            regKey.Close();
-        //    }
-        //    return name;
-
-        //}
+       
+        
     }
 }

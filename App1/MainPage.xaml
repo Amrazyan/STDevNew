@@ -30,6 +30,7 @@
                     >
                     <TextBox 
                         x:Name="inputBox"
+                        Text="https://st-dev.com"
                         Width="300"
                         HorizontalAlignment="Center"
                         BorderThickness="0"
