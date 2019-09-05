@@ -39,34 +39,37 @@ namespace App1.Scripts
             {
                 System.Data.SQLite.SQLiteConnection.CreateFile(databaseName);
             }
-
-            con = new SQLiteConnection($"data source={databaseName}");
-            con.Open();
-
             createDB();
         }
 
         private void createDB()
         {
-            string createQuery = $@"CREATE TABLE IF NOT EXISTS
-                                [{tableName}](
-                                [Id] INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-                                [URL] NVARCHAR(2048),
-                                [IsReachable] INTEGER,
-                                [ResponseTime] FLOAT
-                                )";
-      
-            using (SQLiteCommand cmd = new SQLiteCommand(con))
+            using (SQLiteConnection con = new SQLiteConnection($"data source={databaseName}"))
             {
-                cmd.CommandText = createQuery;
-                cmd.ExecuteNonQuery();                
+                con.Open();
+                string createQuery = $@"CREATE TABLE IF NOT EXISTS
+                                    [{tableName}](
+                                    [Id] INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+                                    [URL] NVARCHAR(2048),
+                                    [IsReachable] INTEGER,
+                                    [ResponseTime] FLOAT
+                                    )";
+      
+                using (SQLiteCommand cmd = new SQLiteCommand(con))
+                {
+                    cmd.CommandText = createQuery;
+                    cmd.ExecuteNonQuery();                
+                }
             }
+
         }
 
 
         public void insertIntoDB(Block block, bool isReachable)
         {
+            using (SQLiteConnection con = new SQLiteConnection($"data source={databaseName}"))
             {
+                con.Open();
                 using (SQLiteCommand cmd = new SQLiteCommand(con))
                 {
                     cmd.CommandText = $"INSERT INTO {tableName}(URL,IsReachable,ResponseTime) VALUES ('{block.URL}','{Convert.ToInt32(isReachable)}','{block.TimeTaken}')";
@@ -78,28 +81,33 @@ namespace App1.Scripts
                     
                 }
             }
+
         }
         public List<UrlDataModel> getAllData()
         {
+            using (SQLiteConnection con = new SQLiteConnection($"data source={databaseName}"))
+            {
+                con.Open();
+                var output = con.Query<UrlDataModel>($"SELECT * FROM {tableName}", new DynamicParameters());
 
-            var output = con.Query<UrlDataModel>($"SELECT * FROM {tableName}", new DynamicParameters());
+                return output.ToList();
+            }
 
-            return output.ToList();
         }
 
         public void deleteById(int id)
         {
-
-            using (SQLiteCommand cmd = new SQLiteCommand(con))
+            using (SQLiteConnection con = new SQLiteConnection($"data source={databaseName}"))
             {
-                cmd.CommandText = $"DELETE FROM {tableName} WHERE Id = {id}";
-                cmd.ExecuteNonQuery();
-            }                
+                con.Open();
+                using (SQLiteCommand cmd = new SQLiteCommand(con))
+                {
+                    cmd.CommandText = $"DELETE FROM {tableName} WHERE Id = {id}";
+                    cmd.ExecuteNonQuery();
+                }   
+            }
+
         }
 
-        ~Database()
-        {
-            con.Dispose();
-        }
     }
 }
