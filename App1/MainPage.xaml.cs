@@ -18,6 +18,7 @@ using Windows.UI.Xaml.Media.Imaging;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Microsoft.Win32;
+using System.Text.RegularExpressions;
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -216,47 +217,72 @@ namespace App1
         }
 
         private void onSearchUrl(object sender, RoutedEventArgs e)
-        {
-            string chromePath = @"C:\ProgramFiles(x86)\Google\Chrome\Application\chrome.exe";
-            string url = "http://stackoverflow.com";
+        {            
 
-            string browserPath = GetSystemDefaultBrowser();
-            Process.Start(chromePath, url);
+            Launch();
+
         }
-
-        internal string GetSystemDefaultBrowser()
+        async void Launch()
         {
-            string name = string.Empty;
-            RegistryKey regKey = null;
+            string uriToLaunch = $@"{inputBox.Text}";
 
+            if (!IsUrlValid(uriToLaunch))
+            {
+                infoMessageBox.Text = "URL is not valid";
+                return;
+            }
+
+            if (!uriToLaunch.StartsWith("https:\\"))
+            {
+                uriToLaunch = @"https:\\" + uriToLaunch;
+            }
             try
             {
-                //set the registry key we want to open
-                regKey = Registry.ClassesRoot.OpenSubKey("HTTP\\shell\\open\\command", false);
+                var uri = new Uri(uriToLaunch);
 
-                //get rid of the enclosing quotes
-                name = regKey.GetValue(null).ToString().ToLower().Replace("" + (char)34, "");
-
-                //check to see if the value ends with .exe (this way we can remove any command line arguments)
-                if (!name.EndsWith("exe"))
-                    //get rid of all command line arguments (anything after the .exe must go)
-                    name = name.Substring(0, name.LastIndexOf(".exe") + 4);
-
+                await Windows.System.Launcher.LaunchUriAsync(uri);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                name = string.Format("ERROR: An exception of type: {0} occurred in method: {1} in the following module: {2}", ex.GetType(), ex.TargetSite, this.GetType());
+                infoMessageBox.Text = "Something went wrong";
             }
-            finally
-            {
-                //check and see if the key is still open, if so
-                //then close it
-                if (regKey != null)
-                    regKey.Close();
-            }
-            //return the value
-            return name;
+            
 
         }
+        private bool IsUrlValid(string url)
+        {
+
+            string pattern = @"^(http|https|ftp|)\://|[a-zA-Z0-9\-\.]+\.[a-zA-Z](:[a-zA-Z0-9]*)?/?([a-zA-Z0-9\-\._\?\,\'/\\\+&amp;%\$#\=~])*[^\.\,\)\(\s]$";
+            Regex reg = new Regex(pattern, RegexOptions.Compiled | RegexOptions.IgnoreCase);
+            return reg.IsMatch(url);
+        }
+        //private string GetSystemDefaultBrowser()
+        //{
+        //    string name = string.Empty;
+        //    RegistryKey regKey = null;
+
+        //    try
+        //    {
+        //        regKey = Registry.ClassesRoot.OpenSubKey("HTTP\\shell\\open\\command", false);
+
+        //        name = regKey.GetValue(null).ToString().ToLower().Replace("" + (char)34, "");
+
+        //        if (!name.EndsWith("exe"))
+        //            name = name.Substring(0, name.LastIndexOf(".exe") + 4);
+
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        name = string.Format("ERROR: An exception of type: {0} occurred in method: {1} in the following module: {2}", ex.GetType(), ex.TargetSite, this.GetType());
+        //    }
+        //    finally
+        //    {
+
+        //        if (regKey != null)
+        //            regKey.Close();
+        //    }
+        //    return name;
+
+        //}
     }
 }

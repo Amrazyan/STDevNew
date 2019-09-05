@@ -19,25 +19,36 @@
 
         <StackPanel Background="Transparent" Width="600" Orientation="Vertical">
             <StackPanel Orientation="Horizontal">
+                <Border
+                        CornerRadius="23" 
+                        Background="Transparent" 
+                        BorderBrush="#1da1f2" 
+                        BorderThickness="1.5"
+                        Height="40" 
+                        Padding="0"
+                        Margin="0,50,0,0"
+                    >
+                    <TextBox 
+                        x:Name="inputBox"
+                        Width="300"
+                        HorizontalAlignment="Center"
+                        BorderThickness="0"
+                        BorderBrush="White"
+                        PlaceholderText="Input url"
+                        FontSize="20"
+                        Foreground="#1da1f2"
+                        Background="Transparent"
+                        TextWrapping="Wrap"  
+                        
+                    />
+                </Border>
 
-                <TextBox 
-                x:Name="inputBox"
-                Width="300"
-                HorizontalAlignment="Center"
-                Text=""
-                    PlaceholderText="Input url"
-                FontSize="20"
-                Foreground="#1da1f2"
-                Background="Transparent"
-                TextWrapping="Wrap"  
-                Margin="0,100,0,50"
-            />
                 <Button 
-                x:Name="ClickMe"
-                Click="onSubmitClick"
-                HorizontalAlignment="Center"
-                Padding="0"
-                Margin="0,50,0,0">
+                    x:Name="ClickMe"
+                    Click="onSubmitClick"
+                    HorizontalAlignment="Center"
+                    Padding="0"
+                    Margin="0,50,0,0">
 
                     <Border 
                         CornerRadius="23" 
